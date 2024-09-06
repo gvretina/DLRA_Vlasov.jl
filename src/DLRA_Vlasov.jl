@@ -15,16 +15,17 @@ alg() = Vern7()
 
 ################## 1D #################
 
-function A_dot(Y0::AbstractArray,p,t)
-    """
-        A_dot(Y,p,t)
 
-    Right-hand side of the Vlasov-Poisson equation.
-    # Arguments
-    - `Y0::AbstractArray`: the initial data.
-    - `p::NamedTuple`: the parameters.
-    - `t::AbstractFloat`: the time of evaluation.
-    """
+"""
+    A_dot(Y,p,t)
+
+Right-hand side of the Vlasov-Poisson equation.
+# Arguments
+- `Y0::AbstractArray`: the initial data.
+- `p::NamedTuple`: the parameters.
+- `t::AbstractFloat`: the time of evaluation.
+"""
+function A_dot(Y0::AbstractArray,p,t)
 
     x = p.x
     v = p.v
@@ -37,21 +38,20 @@ function A_dot(Y0::AbstractArray,p,t)
 end
 
 
+"""
+    A_dot(X,S,V,p,t)
+
+Right-hand side of the Vlasov-Poisson equation, using a low-rank representation.
+# Arguments
+- `X0::AbstractArray`: the left basis matrix with orthonormal columns.
+- `S0::AbstractArray`: the coefficient matrix of the initial data.
+- `V0::AbstractArray`: the right basis matrix with orthonormal columns.
+- `p::NamedTuple`: the parameters.
+- `t::AbstractFloat`: the time of evaluation.
+"""
 function A_dot(X0::AbstractArray,
                S0::AbstractArray,
                V0::AbstractArray,p,t)
-    """
-        A_dot(X,S,V,p,t)
-
-    Right-hand side of the Vlasov-Poisson equation, using a low-rank representation.
-    # Arguments
-    - `X0::AbstractArray`: the left basis matrix with orthonormal columns.
-    - `S0::AbstractArray`: the coefficient matrix of the initial data.
-    - `V0::AbstractArray`: the right basis matrix with orthonormal columns.
-    - `p::NamedTuple`: the parameters.
-    - `t::AbstractFloat`: the time of evaluation.
-    """
-
 
     x = p.x
     v = p.v
@@ -62,18 +62,17 @@ function A_dot(X0::AbstractArray,
     return -dxX*S0*(v.*V0)' + (E .* X0)*S0*dvV'
 end
 
+"""
+    K_dot!(K̇,K0,p,t)
+
+Right-hand side of the DLRA K-step for Vlasov-Poisson equation.
+# Arguments
+- `K̇::AbstractArray`: the matrix to be mutated.
+- `K0::AbstractArray`: the initial data.
+- `p::NamedTuple`: the parameters.
+- `t::AbstractFloat`: the time of evaluation.
+"""
 function K_dot!(K̇,K0,p,t)
-
-    """
-        K_dot!(K̇,K0,p,t)
-
-    Right-hand side of the DLRA K-step for Vlasov-Poisson equation.
-    # Arguments
-    - `K̇::AbstractArray`: the matrix to be mutated.
-    - `K0::AbstractArray`: the initial data.
-    - `p::NamedTuple`: the parameters.
-    - `t::AbstractFloat`: the time of evaluation.
-    """
 
     E = p.E
     c1 = p.c1
@@ -88,19 +87,17 @@ function K_dot!(K̇,K0,p,t)
     @fastmath mul!(K̇,tmp,c2',1,1)
 end
 
+"""
+    L_dot!(L̇,L0,p,t)
+
+Right-hand side of the DLRA L-step for Vlasov-Poisson equation.
+# Arguments
+- `L̇::AbstractArray`: the matrix to be mutated.
+- `L0::AbstractArray`: the initial data.
+- `p::NamedTuple`: the parameters.
+- `t::AbstractFloat`: the time of evaluation.
+"""
 function L_dot!(L̇,L0,p,t)
-
-    """
-        L_dot!(L̇,L0,p,t)
-
-    Right-hand side of the DLRA L-step for Vlasov-Poisson equation.
-    # Arguments
-    - `L̇::AbstractArray`: the matrix to be mutated.
-    - `L0::AbstractArray`: the initial data.
-    - `p::NamedTuple`: the parameters.
-    - `t::AbstractFloat`: the time of evaluation.
-    """
-
     v = p.v
     d1 = p.d1
     d2 = p.d2
@@ -114,18 +111,17 @@ function L_dot!(L̇,L0,p,t)
 
 end
 
+"""
+    S_dot!(Ṡ,S0,p,t)
+
+Right-hand side of the DLRA S-step for Vlasov-Poisson equation.
+# Arguments
+- `Ṡ::AbstractArray`: the matrix to be mutated.
+- `S0::AbstractArray`: the initial data.
+- `p::NamedTuple`: the parameters.
+- `t::AbstractFloat`: the time of evaluation.
+"""
 function S_dot!(Ṡ,S0,p,t)
-
-    """
-        S_dot!(Ṡ,S0,p,t)
-
-    Right-hand side of the DLRA S-step for Vlasov-Poisson equation.
-    # Arguments
-    - `Ṡ::AbstractArray`: the matrix to be mutated.
-    - `S0::AbstractArray`: the initial data.
-    - `p::NamedTuple`: the parameters.
-    - `t::AbstractFloat`: the time of evaluation.
-    """
 
     c1 = p.c1
     c2 = p.c2
@@ -135,74 +131,74 @@ function S_dot!(Ṡ,S0,p,t)
     Ṡ .= muladd(-d2,S0*c1',d1*S0*c2')
 end
 
-function calc_c1!(c1,v,V0)
-    """
-        calc_c1!(c1,v,V0)
+"""
+    calc_c1!(c1,v,V0)
 
-    Compute the c^1 coefficient matrix for the Vlasov-Poisson equation.
-    # Arguments
-    - `c1::AbstractArray`: the matrix to be mutated.
-    - `v::AbstractArray`: the velocity vector.
-    - `V0::AbstractArray`: the initial data.
-    """
+Compute the c^1 coefficient matrix for the Vlasov-Poisson equation.
+# Arguments
+- `c1::AbstractArray`: the matrix to be mutated.
+- `v::AbstractArray`: the velocity vector.
+- `V0::AbstractArray`: the initial data.
+"""
+function calc_c1!(c1,v,V0)
     @fastmath mul!(c1,V0', v.*V0)
 end
 
-function calc_c2!(c2,dv,V0,dvV)
-    """
-        calc_c2!(c1,dv,V0,dvV)
+"""
+    calc_c2!(c1,dv,V0,dvV)
 
-    Compute the c^2 coefficient matrix for the Vlasov-Poisson equation.
-    # Arguments
-    - `c2::AbstractArray`: the matrix to be mutated.
-    - `dv::Tuple`: a triplet containing a vector to be mutated, a frequency vector, and a pre-planned FFT object.
-    - `V0::AbstractArray`: the initial data.
-    - `dvV::AbstractArray`: the matrix to be mutated for the spectral computation of the derivative.
-    """
+Compute the c^2 coefficient matrix for the Vlasov-Poisson equation.
+# Arguments
+- `c2::AbstractArray`: the matrix to be mutated.
+- `dv::Tuple`: a triplet containing a vector to be mutated, a frequency vector, and a pre-planned FFT object.
+- `V0::AbstractArray`: the initial data.
+- `dvV::AbstractArray`: the matrix to be mutated for the spectral computation of the derivative.
+"""
+function calc_c2!(c2,dv,V0,dvV)
     der_fft!(dvV,V0,dv)
     @fastmath mul!(c2,V0',dvV)
 end
 
-function calc_d1!(d1,E,X0)
-    """
-        calc_d1!(d1,E,X0)
+"""
+    calc_d1!(d1,E,X0)
 
-    Compute the d^1 coefficient matrix for the Vlasov-Poisson equation.
-    # Arguments
-    - `d1::AbstractArray`: the matrix to be mutated.
-    - `E::AbstractArray`: the electric field vector.
-    - `X0::AbstractArray`: the initial data.
-    """
+Compute the d^1 coefficient matrix for the Vlasov-Poisson equation.
+# Arguments
+- `d1::AbstractArray`: the matrix to be mutated.
+- `E::AbstractArray`: the electric field vector.
+- `X0::AbstractArray`: the initial data.
+"""
+function calc_d1!(d1,E,X0)
     @fastmath mul!(d1, X0', E .* X0)
 end
 
-function calc_d2!(d2,dx,X0,dxX)
-    """
-        calc_d2!(d2,dx,X0,dxX)
+"""
+    calc_d2!(d2,dx,X0,dxX)
 
-    Compute the d^2 coefficient matrix for the Vlasov-Poisson equation.
-    # Arguments
-    - `d2::AbstractArray`: the matrix to be mutated.
-    - `dx::Tuple`: a triplet containing a vector to be mutated, a frequency vector, and a pre-planned FFT object.
-    - `X0::AbstractArray`: the initial data.
-    - `dxX::AbstractArray`: the matrix to be mutated for the spectral computation of the derivative.
-    """
+Compute the d^2 coefficient matrix for the Vlasov-Poisson equation.
+# Arguments
+- `d2::AbstractArray`: the matrix to be mutated.
+- `dx::Tuple`: a triplet containing a vector to be mutated, a frequency vector, and a pre-planned FFT object.
+- `X0::AbstractArray`: the initial data.
+- `dxX::AbstractArray`: the matrix to be mutated for the spectral computation of the derivative.
+"""
+function calc_d2!(d2,dx,X0,dxX)
     der_fft!(dxX,X0,dx)
     @fastmath mul!(d2, X0', dxX)
 end
 
-function calc_E!(E,X0,S0,V0,h,dx)
-    """
-        calc_E(X0,S0,V0,k,h)
+"""
+    calc_E(X0,S0,V0,k,h)
 
-    Solve the Poisson equation for the inrotational electric field.
-    # Arguments
-    - `X0::AbstractArray`: the left basis matrix with orthonormal columns.
-    - `S0::AbstractArray`: the coefficient matrix of the initial data.
-    - `V0::AbstractArray`: the right basis matrix with orthonormal columns.
-    - `h::AbstractFloat`: the step-size of the velocity discretization.
-    - `dx::Tuple`: a triplet containing a vector to be mutated, a frequency vector, and a pre-planned FFT object.
-    """
+Solve the Poisson equation for the inrotational electric field.
+# Arguments
+- `X0::AbstractArray`: the left basis matrix with orthonormal columns.
+- `S0::AbstractArray`: the coefficient matrix of the initial data.
+- `V0::AbstractArray`: the right basis matrix with orthonormal columns.
+- `h::AbstractFloat`: the step-size of the velocity discretization.
+- `dx::Tuple`: a triplet containing a vector to be mutated, a frequency vector, and a pre-planned FFT object.
+"""
+function calc_E!(E,X0,S0,V0,h,dx)
     p = dx[3]
     ρ̂ = dx[1]
     ρ̂  .= @views p * (1 .- (X0*S0*sum(V0,dims=1)')[:,1] * h )
