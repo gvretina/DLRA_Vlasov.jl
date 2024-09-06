@@ -57,6 +57,8 @@ jobs:
         with:
           version: '1'
       - uses: julia-actions/cache@v2
+      - name: Install dependencies
+        shell: julia --project=docs --color=yes {0} -e 'using Pkg; Pkg.add("DocumenterCitations")'
       - name: Configure doc environment
         shell: julia --project=docs --color=yes {0}
         run: |
