@@ -1,6 +1,5 @@
 using DLRA_Vlasov
 using Documenter
-using DocumenterCitations
 
 bib = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"))
 DocMeta.setdocmeta!(DLRA_Vlasov, :DocTestSetup, :(using DLRA_Vlasov); recursive=true)
