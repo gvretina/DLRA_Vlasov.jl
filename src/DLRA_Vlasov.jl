@@ -9,6 +9,7 @@ using DelimitedFiles
 using FStrings
 using LaTeXStrings
 using LegendrePolynomials
+using DocumenterCitations
 using Base.Docs
 const mnt = MutableNamedTuple
 
