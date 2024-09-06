@@ -17,7 +17,7 @@ alg() = Vern7()
 ################## 1D #################
 
 
-doc"""
+@doc raw"""
     A_dot(Y,p,t)
 
 Right-hand side of the Vlasov-Poisson equation.
@@ -42,7 +42,7 @@ function A_dot(Y0::AbstractArray,p,t)
     return -v.*dxY + E .* dvY
 end
 
-doc"""
+@doc raw"""
     A_dot(X,S,V,p,t)
 
 Right-hand side of the Vlasov-Poisson equation, using a low-rank representation.
@@ -76,7 +76,7 @@ function A_dot(X0::AbstractArray,
     return -dxX*S0*(v.*V0)' + (E .* X0)*S0*dvV'
 end
 
-doc"""
+@doc raw"""
     K_dot!(K̇,K0,p,t)
 
 Right-hand side of the DLRA K-step for Vlasov-Poisson equation.
@@ -106,7 +106,7 @@ function K_dot!(K̇,K0,p,t)
     @fastmath mul!(K̇,tmp,c2',1,1)
 end
 
-doc"""
+@doc raw"""
     L_dot!(L̇,L0,p,t)
 
 Right-hand side of the DLRA L-step for Vlasov-Poisson equation.
@@ -135,7 +135,7 @@ function L_dot!(L̇,L0,p,t)
 
 end
 
-doc"""
+@doc raw"""
     S_dot!(Ṡ,S0,p,t)
 
 Right-hand side of the DLRA S-step for Vlasov-Poisson equation.
@@ -158,7 +158,7 @@ function S_dot!(Ṡ,S0,p,t)
     Ṡ .= muladd(-d2,S0*c1',d1*S0*c2')
 end
 
-doc"""
+@doc raw"""
     calc_c1!(c1,v,V0)
 
 Compute the $c^1$ coefficient matrix for the Vlasov-Poisson equation.
@@ -174,7 +174,7 @@ function calc_c1!(c1,v,V0)
     @fastmath mul!(c1,V0', v.*V0)
 end
 
-doc"""
+@doc raw"""
     calc_c2!(c1,dv,V0,dvV)
 
 Compute the $c^2$ coefficient matrix for the Vlasov-Poisson equation.
@@ -192,7 +192,7 @@ function calc_c2!(c2,dv,V0,dvV)
     @fastmath mul!(c2,V0',dvV)
 end
 
-doc"""
+@doc raw"""
     calc_d1!(d1,E,X0)
 
 Compute the $d^1$ coefficient matrix for the Vlasov-Poisson equation.
@@ -208,7 +208,7 @@ function calc_d1!(d1,E,X0)
     @fastmath mul!(d1, X0', E .* X0)
 end
 
-doc"""
+@doc raw"""
     calc_d2!(d2,dx,X0,dxX)
 
 Compute the $d^2$ coefficient matrix for the Vlasov-Poisson equation.
@@ -226,7 +226,7 @@ function calc_d2!(d2,dx,X0,dxX)
     @fastmath mul!(d2, X0', dxX)
 end
 
-doc"""
+@doc raw"""
     calc_E!(E,X0,S0,V0,h,dx)
 
 Solve the Poisson equation for the inrotational electric field.
@@ -250,7 +250,7 @@ function calc_E!(E,X0,S0,V0,h,dx)
     E .= real.(p\Ê)
 end
 
-doc"""
+@doc raw"""
     initialize(N,r,rmax,τ,flag,integrator)
 
 Pre-allocate matrices and parameters to prepare for the rank-adaptive BUG integrator [Ceruti2022](@cite) or the midpoint BUG integrator [Ceruti2024m](@cite)
@@ -366,7 +366,7 @@ function initialize(N::Integer,r::Integer,rmax::Integer,τ::AbstractFloat,flag::
     return X0,V0,S0,K0,L0,tmpx,tmpv,c1,c2,d1,d2,p
 end
 
-doc"""
+@doc raw"""
     Basis_Update_step(A0,S0,B0,tmp,r,tspan,p,flag)
 
     Perform either an K-step or an L-step depending on the provided argument, according to [Ceruti2022](@cite).
@@ -408,7 +408,7 @@ function Basis_Update_step(A0::AbstractArray,S0::AbstractArray,B0::AbstractArray
     return A1,rnew
 end
 
-doc"""
+@doc raw"""
     BUG_step!(X0,V0,S0,K0,L0,tmpx,tmpv,c1,c2,d1,d2,p,r,rmax,augment)
 
 Perform a complete step with the rank-adaptive BUG integrator [Ceruti2022](@cite) for the Vlasov Poisson equation, and update the basis and coefficient matrices.
@@ -508,7 +508,7 @@ function BUG_step!(X0::AbstractArray,V0::AbstractArray,S0::AbstractArray,
     return nothing
 end
 
-doc"""
+@doc raw"""
     mBUG_step!(X0,V0,S0,K0,L0,tmpx,tmpv,c1,c2,d1,d2,p,r,rmax,ic,augment)
 
 Perform a complete step with the rank-adaptive BUG integrator [Ceruti2024m](@cite) for the Vlasov Poisson equation, and update the basis and coefficient matrices.
@@ -596,7 +596,7 @@ function mBUG_step!(X0::AbstractArray,V0::AbstractArray,S0::AbstractArray,
 end
 
 
-doc"""
+@doc raw"""
     get_sol(N,r,τ,T,tol,flag,integrator,augment)
 
     Compute and store a solution of a specific initial condition specified by `flag`, given by `integrator` at time `T`, given a discretization by `N` spatially and by `τ` in time.
