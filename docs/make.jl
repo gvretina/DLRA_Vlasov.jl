@@ -1,6 +1,8 @@
 using DLRA_Vlasov
 using Documenter
+using DocumenterCitations
 
+bib = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"))
 DocMeta.setdocmeta!(DLRA_Vlasov, :DocTestSetup, :(using DLRA_Vlasov); recursive=true)
 
 makedocs(;
@@ -10,11 +12,12 @@ makedocs(;
     format=Documenter.HTML(;
         canonical="https://gvretina.github.io/DLRA_Vlasov.jl",
         edit_link="main",
-        assets=String[],
+        assets=String["assets/citations.css"],
     ),
     pages=[
         "Home" => "index.md",
     ],
+    plugins=[bib],
 )
 
 deploydocs(;
