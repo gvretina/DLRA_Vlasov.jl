@@ -24,6 +24,10 @@ Right-hand side of the Vlasov-Poisson equation.
 - `Y0::AbstractArray`: the initial data.
 - `p::NamedTuple`: the parameters.
 - `t::AbstractFloat`: the time of evaluation.
+
+# Description
+The Vlasov-Poisson equation is given by the following expression,
+```math \partial_t f(t,x,v) = -v\cdot \nabla_x f(t,x,v) + E(x) \cdot \nabla_v f(t,x,v).```
 """
 function A_dot(Y0::AbstractArray,p,t)
 
@@ -37,7 +41,6 @@ function A_dot(Y0::AbstractArray,p,t)
     return -v.*dxY + E .* dvY
 end
 
-
 """
     A_dot(X,S,V,p,t)
 
@@ -48,6 +51,16 @@ Right-hand side of the Vlasov-Poisson equation, using a low-rank representation.
 - `V0::AbstractArray`: the right basis matrix with orthonormal columns.
 - `p::NamedTuple`: the parameters.
 - `t::AbstractFloat`: the time of evaluation.
+# Description
+The Vlasov-Poisson equation is given by the following expression,
+
+```math
+\partial_t f(t,x,v) = -v\cdot \nabla_x f(t,x,v) + E(f)(x) \cdot \nabla_v f(t,x,v),
+```
+but now further does a low-rank representation of $f$, i.e.
+```math
+f(t,x,v) = \sum_{i,j=1}^r X_i(t,x) S_{ij}(t) V_{j}(t,v).
+```
 """
 function A_dot(X0::AbstractArray,
                S0::AbstractArray,
@@ -71,6 +84,11 @@ Right-hand side of the DLRA K-step for Vlasov-Poisson equation.
 - `K0::AbstractArray`: the initial data.
 - `p::NamedTuple`: the parameters.
 - `t::AbstractFloat`: the time of evaluation.
+# Description
+Following [Einkemmer2018](@cite), the differential equation for the K-step is,
+```math
+    \dot{K}_j = \sum_l \left( - c_{jl}^1 \cdot \nabla_x K_l (t,x) + c_{jl}^2 \cdot E(K)(t,x) K_l(t,x) \right).
+```
 """
 function K_dot!(K̇,K0,p,t)
 
@@ -96,6 +114,11 @@ Right-hand side of the DLRA L-step for Vlasov-Poisson equation.
 - `L0::AbstractArray`: the initial data.
 - `p::NamedTuple`: the parameters.
 - `t::AbstractFloat`: the time of evaluation.
+# Description
+Following [Einkemmer2018](@cite), the differential equation for the L-step is,
+    ```math
+    \dot{L}_i(t,v) = \sum_k \left(- (d_{ik}^2\cdot v) L_k(t,v) + d_{ik}^1 \cdot \nabla_v L_k(t,v) \right).
+    ```
 """
 function L_dot!(L̇,L0,p,t)
     v = p.v
@@ -120,6 +143,9 @@ Right-hand side of the DLRA S-step for Vlasov-Poisson equation.
 - `S0::AbstractArray`: the initial data.
 - `p::NamedTuple`: the parameters.
 - `t::AbstractFloat`: the time of evaluation.
+Following [Einkemmer2018](@cite), the differential equation for the S-step is,
+    ```math
+    \dot{S}_{ij}(t) = \sum_{k,l} \left(- c_{jl}^1 d_{ik}^2 + c_{jl}^2 d_{ik}^1 \right) S_{kl}(t). ```
 """
 function S_dot!(Ṡ,S0,p,t)
 
@@ -134,11 +160,14 @@ end
 """
     calc_c1!(c1,v,V0)
 
-Compute the c^1 coefficient matrix for the Vlasov-Poisson equation.
+Compute the $c^1$ coefficient matrix for the Vlasov-Poisson equation.
 # Arguments
 - `c1::AbstractArray`: the matrix to be mutated.
 - `v::AbstractArray`: the velocity vector.
 - `V0::AbstractArray`: the initial data.
+# Description
+Following [Einkemmer2018](@cite), the $c^1$ coefficient matrix is given by,
+```math  c^1_{jl} \coloneqq \int_{\Omega_v} v V_j V_l \,\mathrm{d} v. ```
 """
 function calc_c1!(c1,v,V0)
     @fastmath mul!(c1,V0', v.*V0)
@@ -147,12 +176,15 @@ end
 """
     calc_c2!(c1,dv,V0,dvV)
 
-Compute the c^2 coefficient matrix for the Vlasov-Poisson equation.
+Compute the $c^2$ coefficient matrix for the Vlasov-Poisson equation.
 # Arguments
 - `c2::AbstractArray`: the matrix to be mutated.
 - `dv::Tuple`: a triplet containing a vector to be mutated, a frequency vector, and a pre-planned FFT object.
 - `V0::AbstractArray`: the initial data.
 - `dvV::AbstractArray`: the matrix to be mutated for the spectral computation of the derivative.
+# Description
+Following [Einkemmer2018](@cite), the $c^2$ coefficient matrix is given by,
+```math  c^2_{jl} \coloneqq \int_{\Omega_v} V_j (\nabla_v V_l) \,\mathrm{d} v. ```
 """
 function calc_c2!(c2,dv,V0,dvV)
     der_fft!(dvV,V0,dv)
@@ -162,11 +194,14 @@ end
 """
     calc_d1!(d1,E,X0)
 
-Compute the d^1 coefficient matrix for the Vlasov-Poisson equation.
+Compute the $d^1$ coefficient matrix for the Vlasov-Poisson equation.
 # Arguments
 - `d1::AbstractArray`: the matrix to be mutated.
 - `E::AbstractArray`: the electric field vector.
 - `X0::AbstractArray`: the initial data.
+# Description
+Following [Einkemmer2018](@cite), the $d^1$ coefficient matrix is given by,
+```math d^1_{ik} \coloneqq \int_{\Omega_x} X_i E X_k \,\mathrm{d} x. ```
 """
 function calc_d1!(d1,E,X0)
     @fastmath mul!(d1, X0', E .* X0)
@@ -175,12 +210,15 @@ end
 """
     calc_d2!(d2,dx,X0,dxX)
 
-Compute the d^2 coefficient matrix for the Vlasov-Poisson equation.
+Compute the $d^2$ coefficient matrix for the Vlasov-Poisson equation.
 # Arguments
 - `d2::AbstractArray`: the matrix to be mutated.
 - `dx::Tuple`: a triplet containing a vector to be mutated, a frequency vector, and a pre-planned FFT object.
 - `X0::AbstractArray`: the initial data.
 - `dxX::AbstractArray`: the matrix to be mutated for the spectral computation of the derivative.
+    # Description
+Following [Einkemmer2018](@cite), the $d^2$ coefficient matrix is given by,
+```math d_{ik}^2 \coloneqq \int_{\Omega_x} X_i(\nabla_x X_k) \,\mathrm{d} x. ```
 """
 function calc_d2!(d2,dx,X0,dxX)
     der_fft!(dxX,X0,dx)
@@ -188,15 +226,19 @@ function calc_d2!(d2,dx,X0,dxX)
 end
 
 """
-    calc_E(X0,S0,V0,k,h)
+    calc_E!(E,X0,S0,V0,h,dx)
 
 Solve the Poisson equation for the inrotational electric field.
 # Arguments
+- `E::AbstractArray`: the electric field vector to be mutated.
 - `X0::AbstractArray`: the left basis matrix with orthonormal columns.
 - `S0::AbstractArray`: the coefficient matrix of the initial data.
 - `V0::AbstractArray`: the right basis matrix with orthonormal columns.
 - `h::AbstractFloat`: the step-size of the velocity discretization.
 - `dx::Tuple`: a triplet containing a vector to be mutated, a frequency vector, and a pre-planned FFT object.
+# Description
+The electric field in the case of the Vlasov-Poisson equation, satisfies the following equations,
+```math \nabla \cdot {E}(f)(x) &= 1 - \int_{\Omega_v} f(t,x,v) \,\mathrm{d} v, \qquad  \nabla \times {E}(f)(x) = 0. ```
 """
 function calc_E!(E,X0,S0,V0,h,dx)
     p = dx[3]
@@ -207,7 +249,33 @@ function calc_E!(E,X0,S0,V0,h,dx)
     E .= real.(p\Ê)
 end
 
-function initialize(N,r,rmax,τ,flag,integrator)
+"""
+    initialize(N,r,rmax,τ,flag,integrator)
+
+Pre-allocate matrices and parameters to prepare for the rank-adaptive BUG integrator [Ceruti2022](@cite) or the midpoint BUG integrator [Ceruti2024m](@cite)
+# Arguments
+- `N::Integer`: The number of grid points to be used.
+- `r::Integer`: The initial rank.
+- `rmax::Integer`: The maximum allowed rank.
+- `τ::AbstractFloat`: The time step size.
+- `flag::String`: A variable to select between different problems
+- `integrator::String`: A variable to select between the two integrators.
+# Returns
+- `X0::Matrix`: The left basis where only the first $N\times r$ submatrix is filled with information.
+- `V0::Matrix`: The right basis where only the first $N\times r$ submatrix is filled with information.
+- `S0::Matrix`: The coefficient matrix where only the first $r \times r$ submatrix is filled with information.
+- `K0::Matrix`: A matrix with the same dimensions as `X0` used for the K-step.
+- `L0::Matrix`: A matrix with the same dimensions as `V0` used for the L-step.
+- `tmpx::Matrix`: A matrix with the same dimensions as `X0` used for intermediate computations.
+- `tmpv::Matrix`: A matrix with the same dimensions as `V0` used for intermediate computations.
+- `c1::Matrix`: A matrix with the same dimensions as `S0`, to compute the $c^1$ coefficients.
+- `c2::Matrix`: A matrix with the same dimensions as `S0`, to compute the $c^2$ coefficients.
+- `d1::Matrix`: A matrix with the same dimensions as `S0`, to compute the $d^1$ coefficients.
+- `d2::Matrix`: A matrix with the same dimensions as `S0`, to compute the $d^2$ coefficients.
+- `p::MutableNamedTuple`: The parameters of our problem.
+"""
+
+function initialize(N::Integer,r::Integer,rmax::Integer,τ::AbstractFloat,flag::String,integrator::String)
 
     T = Float64
     Nx = N#÷2
@@ -269,16 +337,6 @@ function initialize(N,r,rmax,τ,flag,integrator)
     hx = x[2]-x[1]
     hv = v[2]-v[1]
 
-    Ax = diagm(1 => fill(1.0/(2.0*hx), Nx-1)) + diagm(-1 => fill(-1.0/(2.0*hx), Nx-1))
-    Ax[1, end] = -1.0/(2.0*hx)
-    Ax[end, 1] =  1.0/(2.0*hx)
-
-    Av = diagm(1 => fill(1.0/(2.0*hv), Nv-1)) + diagm(-1 => fill(-1.0/(2.0*hv), Nv-1))
-    Av[1, end] = -1.0/(2.0*hv)
-
-    global Ax
-    global Av
-
     tol = 1e-10
 
     if r > 1
@@ -307,7 +365,25 @@ function initialize(N,r,rmax,τ,flag,integrator)
     return X0,V0,S0,K0,L0,tmpx,tmpv,c1,c2,d1,d2,p
 end
 
-function Basis_Update_step(A0,S0,B0,tmp,r,tspan,p,flag)
+"""
+    Basis_Update_step(A0,S0,B0,tmp,r,tspan,p,flag)
+
+    Perform either an K-step or an L-step depending on the provided argument, according to [Ceruti2022](@cite).
+# Arguments
+- `A0::Matrix`: A basis matrix.
+- `S0::Matrix`: The coefficient matrix.
+- `B0::Matrix`: The correct multiplication of the previous two arguments, depending on which step is taken.
+- `tmp::Matrix`: The appropriate temporary matrix for computations.
+- `r::Integer`: The current rank.
+- `tspan::Tuple`: A tuple that contains the initial and final time of integration of the appropriate ODE.
+- `flag::String`: A variable to select which step is to be taken.
+# Returns
+- `A1::Matrix`: The updated and augmented new basis matrix.
+- `rnew::Matrix`: The rank of the new basis matrix.
+"""
+
+function Basis_Update_step(A0::AbstractArray,S0::AbstractArray,B0::AbstractArray,
+                            tmp::AbstractArray,r::Integer,tspan::Tuple,p::mnt,flag::String)
     p.tmp = @views @inbounds tmp[:,1:r]
     if flag == "K-step"
         @fastmath @views @inbounds mul!(B0[:,1:r],A0[:,1:r],S0[1:r,1:r])
@@ -331,8 +407,18 @@ function Basis_Update_step(A0,S0,B0,tmp,r,tspan,p,flag)
     return A1,rnew
 end
 
+"""
+    BUG_step!(X0,V0,S0,K0,L0,tmpx,tmpv,c1,c2,d1,d2,p,r,rmax,augment)
 
-function BUG_step!(X0,V0,S0,K0,L0,tmpx,tmpv,c1,c2,d1,d2,p,r,rmax,augment)
+Perform a complete step with the rank-adaptive BUG integrator [Ceruti2022](@cite) for the Vlasov Poisson equation, and update the basis and coefficient matrices.
+"""
+function BUG_step!(X0::AbstractArray,V0::AbstractArray,S0::AbstractArray,
+                       K0::AbstractArray,L0::AbstractArray,
+                       tmpx::AbstractArray,tmpv::AbstractArray,
+                       c1::AbstractArray,c2::AbstractArray,
+                       d1::AbstractArray,d2::AbstractArray,
+                       p::MutableNamedTuple,r::Integer,rmax::Integer,
+                       augment::Bool)
     τ = p.τ
     p.r = r
     @views calc_E!(p.E,X0[:,1:r],S0[1:r,1:r],V0[:,1:r],p.h,p.dx);
@@ -421,6 +507,11 @@ function BUG_step!(X0,V0,S0,K0,L0,tmpx,tmpv,c1,c2,d1,d2,p,r,rmax,augment)
     return nothing
 end
 
+"""
+    mBUG_step!(X0,V0,S0,K0,L0,tmpx,tmpv,c1,c2,d1,d2,p,r,rmax,ic,augment)
+
+Perform a complete step with the rank-adaptive BUG integrator [Ceruti2024m](@cite) for the Vlasov Poisson equation, and update the basis and coefficient matrices.
+"""
 function mBUG_step!(X0::AbstractArray,V0::AbstractArray,S0::AbstractArray,
                        K0::AbstractArray,L0::AbstractArray,
                        tmpx::AbstractArray,tmpv::AbstractArray,
@@ -503,6 +594,12 @@ function mBUG_step!(X0::AbstractArray,V0::AbstractArray,S0::AbstractArray,
     @views @inbounds copy!(S0[1:r,1:r],diagm(Σ[1:r]));
 end
 
+
+"""
+    get_sol(N,r,τ,T,tol,flag,integrator,augment)
+
+    Compute and store a solution of a specific initial condition specified by `flag`, given by `integrator` at time `T`, given a discretization by `N` spatially and by `τ` in time.
+"""
 function get_sol(N,r,τ,T,tol,flag,integrator,augment)
     rmax = 2*r
     X0,V0,S0,K0,L0,tmpx,tmpv,c1,c2,d1,d2,p = initialize(N,r,rmax,τ,flag,integrator)
