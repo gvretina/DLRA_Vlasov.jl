@@ -9,6 +9,7 @@ using DelimitedFiles
 using FStrings
 using LaTeXStrings
 using LegendrePolynomials
+using Documenter
 const mnt = MutableNamedTuple
 
 alg() = Vern7()
@@ -16,7 +17,7 @@ alg() = Vern7()
 ################## 1D #################
 
 
-"""
+doc"""
     A_dot(Y,p,t)
 
 Right-hand side of the Vlasov-Poisson equation.
@@ -27,7 +28,7 @@ Right-hand side of the Vlasov-Poisson equation.
 
 # Description
 The Vlasov-Poisson equation is given by the following expression,
-```math \partial_t f(t,x,v) = -v\cdot \nabla_x f(t,x,v) + E(x) \cdot \nabla_v f(t,x,v).```
+```math ∂_t f(t,x,v) = -v ⋅ ∇_x f(t,x,v) + E(x) ⋅ ∇_v f(t,x,v).```
 """
 function A_dot(Y0::AbstractArray,p,t)
 
@@ -41,7 +42,7 @@ function A_dot(Y0::AbstractArray,p,t)
     return -v.*dxY + E .* dvY
 end
 
-"""
+doc"""
     A_dot(X,S,V,p,t)
 
 Right-hand side of the Vlasov-Poisson equation, using a low-rank representation.
@@ -55,11 +56,11 @@ Right-hand side of the Vlasov-Poisson equation, using a low-rank representation.
 The Vlasov-Poisson equation is given by the following expression,
 
 ```math
-\partial_t f(t,x,v) = -v\cdot \nabla_x f(t,x,v) + E(f)(x) \cdot \nabla_v f(t,x,v),
+∂_t f(t,x,v) = -v ⋅ ∇_x f(t,x,v) + E(f)(x) ⋅ ∇_v f(t,x,v),
 ```
 but now further does a low-rank representation of $f$, i.e.
 ```math
-f(t,x,v) = \sum_{i,j=1}^r X_i(t,x) S_{ij}(t) V_{j}(t,v).
+f(t,x,v) = ∑_{i,j=1}^r X_i(t,x) S_{ij}(t) V_{j}(t,v).
 ```
 """
 function A_dot(X0::AbstractArray,
@@ -75,7 +76,7 @@ function A_dot(X0::AbstractArray,
     return -dxX*S0*(v.*V0)' + (E .* X0)*S0*dvV'
 end
 
-"""
+doc"""
     K_dot!(K̇,K0,p,t)
 
 Right-hand side of the DLRA K-step for Vlasov-Poisson equation.
@@ -87,7 +88,7 @@ Right-hand side of the DLRA K-step for Vlasov-Poisson equation.
 # Description
 Following [Einkemmer2018](@cite), the differential equation for the K-step is,
 ```math
-    \dot{K}_j = \sum_l \left( - c_{jl}^1 \cdot \nabla_x K_l (t,x) + c_{jl}^2 \cdot E(K)(t,x) K_l(t,x) \right).
+    K̇_j = ∑_l \left( - c_{jl}^1 ⋅ ∇_x K_l (t,x) + c_{jl}^2 ⋅ E(K)(t,x) K_l(t,x) \right).
 ```
 """
 function K_dot!(K̇,K0,p,t)
@@ -105,7 +106,7 @@ function K_dot!(K̇,K0,p,t)
     @fastmath mul!(K̇,tmp,c2',1,1)
 end
 
-"""
+doc"""
     L_dot!(L̇,L0,p,t)
 
 Right-hand side of the DLRA L-step for Vlasov-Poisson equation.
@@ -117,7 +118,7 @@ Right-hand side of the DLRA L-step for Vlasov-Poisson equation.
 # Description
 Following [Einkemmer2018](@cite), the differential equation for the L-step is,
     ```math
-    \dot{L}_i(t,v) = \sum_k \left(- (d_{ik}^2\cdot v) L_k(t,v) + d_{ik}^1 \cdot \nabla_v L_k(t,v) \right).
+    L̇_i(t,v) = ∑_k \left(- (d_{ik}^2⋅ v) L_k(t,v) + d_{ik}^1 ⋅ ∇_v L_k(t,v) \right).
     ```
 """
 function L_dot!(L̇,L0,p,t)
@@ -134,7 +135,7 @@ function L_dot!(L̇,L0,p,t)
 
 end
 
-"""
+doc"""
     S_dot!(Ṡ,S0,p,t)
 
 Right-hand side of the DLRA S-step for Vlasov-Poisson equation.
@@ -145,7 +146,7 @@ Right-hand side of the DLRA S-step for Vlasov-Poisson equation.
 - `t::AbstractFloat`: the time of evaluation.
 Following [Einkemmer2018](@cite), the differential equation for the S-step is,
     ```math
-    \dot{S}_{ij}(t) = \sum_{k,l} \left(- c_{jl}^1 d_{ik}^2 + c_{jl}^2 d_{ik}^1 \right) S_{kl}(t). ```
+    Ṡ_{ij}(t) = ∑_{k,l} \left(- c_{jl}^1 d_{ik}^2 + c_{jl}^2 d_{ik}^1 \right) S_{kl}(t). ```
 """
 function S_dot!(Ṡ,S0,p,t)
 
@@ -157,7 +158,7 @@ function S_dot!(Ṡ,S0,p,t)
     Ṡ .= muladd(-d2,S0*c1',d1*S0*c2')
 end
 
-"""
+doc"""
     calc_c1!(c1,v,V0)
 
 Compute the $c^1$ coefficient matrix for the Vlasov-Poisson equation.
@@ -167,13 +168,13 @@ Compute the $c^1$ coefficient matrix for the Vlasov-Poisson equation.
 - `V0::AbstractArray`: the initial data.
 # Description
 Following [Einkemmer2018](@cite), the $c^1$ coefficient matrix is given by,
-```math  c^1_{jl} \coloneqq \int_{\Omega_v} v V_j V_l \,\mathrm{d} v. ```
+```math  c^1_{jl} ≔ ∫_{\Omega_v} v V_j V_l \,\mathrm{d} v. ```
 """
 function calc_c1!(c1,v,V0)
     @fastmath mul!(c1,V0', v.*V0)
 end
 
-"""
+doc"""
     calc_c2!(c1,dv,V0,dvV)
 
 Compute the $c^2$ coefficient matrix for the Vlasov-Poisson equation.
@@ -184,14 +185,14 @@ Compute the $c^2$ coefficient matrix for the Vlasov-Poisson equation.
 - `dvV::AbstractArray`: the matrix to be mutated for the spectral computation of the derivative.
 # Description
 Following [Einkemmer2018](@cite), the $c^2$ coefficient matrix is given by,
-```math  c^2_{jl} \coloneqq \int_{\Omega_v} V_j (\nabla_v V_l) \,\mathrm{d} v. ```
+```math  c^2_{jl} ≔ ∫_{\Omega_v} V_j (∇_v V_l) \,\mathrm{d} v. ```
 """
 function calc_c2!(c2,dv,V0,dvV)
     der_fft!(dvV,V0,dv)
     @fastmath mul!(c2,V0',dvV)
 end
 
-"""
+doc"""
     calc_d1!(d1,E,X0)
 
 Compute the $d^1$ coefficient matrix for the Vlasov-Poisson equation.
@@ -201,13 +202,13 @@ Compute the $d^1$ coefficient matrix for the Vlasov-Poisson equation.
 - `X0::AbstractArray`: the initial data.
 # Description
 Following [Einkemmer2018](@cite), the $d^1$ coefficient matrix is given by,
-```math d^1_{ik} \coloneqq \int_{\Omega_x} X_i E X_k \,\mathrm{d} x. ```
+```math d^1_{ik} ≔ ∫_{\Omega_x} X_i E X_k \,\mathrm{d} x. ```
 """
 function calc_d1!(d1,E,X0)
     @fastmath mul!(d1, X0', E .* X0)
 end
 
-"""
+doc"""
     calc_d2!(d2,dx,X0,dxX)
 
 Compute the $d^2$ coefficient matrix for the Vlasov-Poisson equation.
@@ -218,14 +219,14 @@ Compute the $d^2$ coefficient matrix for the Vlasov-Poisson equation.
 - `dxX::AbstractArray`: the matrix to be mutated for the spectral computation of the derivative.
     # Description
 Following [Einkemmer2018](@cite), the $d^2$ coefficient matrix is given by,
-```math d_{ik}^2 \coloneqq \int_{\Omega_x} X_i(\nabla_x X_k) \,\mathrm{d} x. ```
+```math d_{ik}^2 ≔ ∫_{\Omega_x} X_i(∇_x X_k) \,\mathrm{d} x. ```
 """
 function calc_d2!(d2,dx,X0,dxX)
     der_fft!(dxX,X0,dx)
     @fastmath mul!(d2, X0', dxX)
 end
 
-"""
+doc"""
     calc_E!(E,X0,S0,V0,h,dx)
 
 Solve the Poisson equation for the inrotational electric field.
@@ -238,7 +239,7 @@ Solve the Poisson equation for the inrotational electric field.
 - `dx::Tuple`: a triplet containing a vector to be mutated, a frequency vector, and a pre-planned FFT object.
 # Description
 The electric field in the case of the Vlasov-Poisson equation, satisfies the following equations,
-```math \nabla \cdot {E}(f)(x) &= 1 - \int_{\Omega_v} f(t,x,v) \,\mathrm{d} v, \qquad  \nabla \times {E}(f)(x) = 0. ```
+```math ∇ ⋅ {E}(f)(x) &= 1 - ∫_{\Omega_v} f(t,x,v) \,\mathrm{d} v, \qquad  ∇ \times {E}(f)(x) = 0. ```
 """
 function calc_E!(E,X0,S0,V0,h,dx)
     p = dx[3]
@@ -249,7 +250,7 @@ function calc_E!(E,X0,S0,V0,h,dx)
     E .= real.(p\Ê)
 end
 
-"""
+doc"""
     initialize(N,r,rmax,τ,flag,integrator)
 
 Pre-allocate matrices and parameters to prepare for the rank-adaptive BUG integrator [Ceruti2022](@cite) or the midpoint BUG integrator [Ceruti2024m](@cite)
@@ -365,7 +366,7 @@ function initialize(N::Integer,r::Integer,rmax::Integer,τ::AbstractFloat,flag::
     return X0,V0,S0,K0,L0,tmpx,tmpv,c1,c2,d1,d2,p
 end
 
-"""
+doc"""
     Basis_Update_step(A0,S0,B0,tmp,r,tspan,p,flag)
 
     Perform either an K-step or an L-step depending on the provided argument, according to [Ceruti2022](@cite).
@@ -407,7 +408,7 @@ function Basis_Update_step(A0::AbstractArray,S0::AbstractArray,B0::AbstractArray
     return A1,rnew
 end
 
-"""
+doc"""
     BUG_step!(X0,V0,S0,K0,L0,tmpx,tmpv,c1,c2,d1,d2,p,r,rmax,augment)
 
 Perform a complete step with the rank-adaptive BUG integrator [Ceruti2022](@cite) for the Vlasov Poisson equation, and update the basis and coefficient matrices.
@@ -507,7 +508,7 @@ function BUG_step!(X0::AbstractArray,V0::AbstractArray,S0::AbstractArray,
     return nothing
 end
 
-"""
+doc"""
     mBUG_step!(X0,V0,S0,K0,L0,tmpx,tmpv,c1,c2,d1,d2,p,r,rmax,ic,augment)
 
 Perform a complete step with the rank-adaptive BUG integrator [Ceruti2024m](@cite) for the Vlasov Poisson equation, and update the basis and coefficient matrices.
@@ -595,7 +596,7 @@ function mBUG_step!(X0::AbstractArray,V0::AbstractArray,S0::AbstractArray,
 end
 
 
-"""
+doc"""
     get_sol(N,r,τ,T,tol,flag,integrator,augment)
 
     Compute and store a solution of a specific initial condition specified by `flag`, given by `integrator` at time `T`, given a discretization by `N` spatially and by `τ` in time.
