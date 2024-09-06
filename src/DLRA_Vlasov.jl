@@ -9,7 +9,7 @@ using DelimitedFiles
 using FStrings
 using LaTeXStrings
 using LegendrePolynomials
-using Documenter
+using Base.Docs
 const mnt = MutableNamedTuple
 
 alg() = Vern7()
@@ -56,7 +56,7 @@ Right-hand side of the Vlasov-Poisson equation, using a low-rank representation.
 The Vlasov-Poisson equation is given by the following expression,
 
 ```math
-∂_t f(t,x,v) = -v ⋅ ∇_x f(t,x,v) + E(f)(x) ⋅ ∇_v f(t,x,v),
+\partial_t f(t,x,v) = -v \cdot \nabla_x f(t,x,v) + E(f)(x) \cdot \nabla_v f(t,x,v),
 ```
 but now further does a low-rank representation of $f$, i.e.
 ```math
