@@ -1,10 +1,10 @@
 module DLRA_Vlasov
+
 using LinearAlgebra
 using FFTW
 using OrdinaryDiffEq
 using MutableNamedTuples
 using ProgressMeter
-using GLMakie
 using DelimitedFiles
 using FStrings
 using LaTeXStrings
