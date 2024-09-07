@@ -9,10 +9,6 @@ Documentation for [DLRA_Vlasov](https://github.com/gvretina/DLRA_Vlasov.jl).
 ```@index
 ```
 
-```@autodocs
-Modules = [DLRA_Vlasov]
-```
-
 ```@docs
 A_dot
 K_dot!
