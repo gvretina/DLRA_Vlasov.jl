@@ -151,7 +151,7 @@ Right-hand side of the DLRA S-step for Vlasov-Poisson equation.
 - `t::AbstractFloat`: the time of evaluation.
 Following [Einkemmer2018](@cite), the differential equation for the S-step is,
 ```math
-    \dot{S}_{ij}(t) = \sum_{k,l=1}^r \left(- c_{jl}^1 d_{ik}^2 + c_{jl}^2 d_{ik}^1 \right) S_{kl}(t).
+\dot{S}_{ij}(t) = \sum_{k,l=1}^r \left(- c_{jl}^1 \cdot d_{ik}^2 + c_{jl}^2 \cdot d_{ik}^1 \right) S_{kl}(t).
 ```
 """
 function S_dot!(Ṡ,S0,p,t)
