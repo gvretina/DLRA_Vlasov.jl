@@ -19,7 +19,7 @@ alg() = Vern7()
 
 
 @doc raw"""
-    A_dot(Y,p,t)
+    A_dot(Y0,p,t)
 
 Right-hand side of the Vlasov-Poisson equation.
 # Arguments
@@ -29,7 +29,9 @@ Right-hand side of the Vlasov-Poisson equation.
 
 # Description
 The Vlasov-Poisson equation is given by the following expression,
-```math \partial_t f(t,x,v) = -v \cdot \nabla_x f(t,x,v) + E(x) \cdot \nabla_v f(t,x,v).```
+```math
+\partial_t f(t,x,v) = -v \cdot \nabla_x f(t,x,v) + E(x) \cdot \nabla_v f(t,x,v).
+```
 """
 function A_dot(Y0::AbstractArray,p,t)
 
@@ -44,7 +46,7 @@ function A_dot(Y0::AbstractArray,p,t)
 end
 
 @doc raw"""
-    A_dot(X,S,V,p,t)
+    A_dot(X0,S0,V0,p,t)
 
 Right-hand side of the Vlasov-Poisson equation, using a low-rank representation.
 # Arguments
@@ -118,9 +120,9 @@ Right-hand side of the DLRA L-step for Vlasov-Poisson equation.
 - `t::AbstractFloat`: the time of evaluation.
 # Description
 Following [Einkemmer2018](@cite), the differential equation for the L-step is,
-    ```math
+```math
     \dot{L}_i(t,v) = \sum_{k=1}^r \left(- (d_{ik}^2 \cdot v) L_k(t,v) + d_{ik}^1 \cdot \nabla_v L_k(t,v) \right).
-    ```
+```
 """
 function L_dot!(L̇,L0,p,t)
     v = p.v
@@ -146,9 +148,9 @@ Right-hand side of the DLRA S-step for Vlasov-Poisson equation.
 - `p::NamedTuple`: the parameters.
 - `t::AbstractFloat`: the time of evaluation.
 Following [Einkemmer2018](@cite), the differential equation for the S-step is,
-    ```math
+```math
     \dot{S}_{ij}(t) = \sum_{k,l=1}^r \left(- c_{jl}^1 d_{ik}^2 + c_{jl}^2 d_{ik}^1 \right) S_{kl}(t).
-    ```
+```
 """
 function S_dot!(Ṡ,S0,p,t)
 
@@ -611,7 +613,7 @@ end
 @doc raw"""
     get_sol(N,r,τ,T,tol,flag,integrator,augment)
 
-    Compute and store a solution of a specific initial condition specified by `flag`, given by `integrator` at time `T`, given a discretization by `N` spatially and by `τ` in time.
+Compute and store a solution of a specific initial condition specified by `flag`, given by `integrator` at time `T`, given a discretization by `N` spatially and by `τ` in time.
 """
 function get_sol(N,r,τ,T,tol,flag,integrator,augment)
     rmax = 2*r
