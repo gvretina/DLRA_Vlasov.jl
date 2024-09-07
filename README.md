@@ -13,5 +13,3 @@
 
 - **Dynamical Low-Rank Approximation**: Efficiently reduces the complexity of solving high-dimensional problems.
 - **Vlasov-Poisson Solver**: Specifically designed to tackle the Vlasov-Poisson equation, making it suitable for various applications in plasma dynamics.
-- **Easy to Use**: Provides a user-friendly interface for setting up and solving problems.
-
