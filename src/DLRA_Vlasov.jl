@@ -29,7 +29,7 @@ Right-hand side of the Vlasov-Poisson equation.
 
 # Description
 The Vlasov-Poisson equation is given by the following expression,
-```math ∂_t f(t,x,v) = -v ⋅ ∇_x f(t,x,v) + E(x) ⋅ ∇_v f(t,x,v).```
+```math \partial_t f(t,x,v) = -v \cdot \nabla_x f(t,x,v) + E(x) \cdot \nabla_v f(t,x,v).```
 """
 function A_dot(Y0::AbstractArray,p,t)
 
@@ -89,7 +89,7 @@ Right-hand side of the DLRA K-step for Vlasov-Poisson equation.
 # Description
 Following [Einkemmer2018](@cite), the differential equation for the K-step is,
 ```math
-    K̇_j = ∑_l \left( - c_{jl}^1 ⋅ ∇_x K_l (t,x) + c_{jl}^2 ⋅ E(K)(t,x) K_l(t,x) \right).
+    \dot{K}_j = \sum_{l=1}^r \left( - c_{jl}^1 ⋅ \nabla_x K_l (t,x) + c_{jl}^2 ⋅ E(K)(t,x) K_l(t,x) \right).
 ```
 """
 function K_dot!(K̇,K0,p,t)
@@ -119,7 +119,7 @@ Right-hand side of the DLRA L-step for Vlasov-Poisson equation.
 # Description
 Following [Einkemmer2018](@cite), the differential equation for the L-step is,
     ```math
-    L̇_i(t,v) = ∑_k \left(- (d_{ik}^2⋅ v) L_k(t,v) + d_{ik}^1 ⋅ ∇_v L_k(t,v) \right).
+    \dot{L}_i(t,v) = \sum_{k=1}^r \left(- (d_{ik}^2 \cdot v) L_k(t,v) + d_{ik}^1 \cdot \nabla_v L_k(t,v) \right).
     ```
 """
 function L_dot!(L̇,L0,p,t)
@@ -147,7 +147,8 @@ Right-hand side of the DLRA S-step for Vlasov-Poisson equation.
 - `t::AbstractFloat`: the time of evaluation.
 Following [Einkemmer2018](@cite), the differential equation for the S-step is,
     ```math
-    Ṡ_{ij}(t) = ∑_{k,l} \left(- c_{jl}^1 d_{ik}^2 + c_{jl}^2 d_{ik}^1 \right) S_{kl}(t). ```
+    \dot{S}_{ij}(t) = \sum_{k,l=1}^r \left(- c_{jl}^1 d_{ik}^2 + c_{jl}^2 d_{ik}^1 \right) S_{kl}(t).
+    ```
 """
 function S_dot!(Ṡ,S0,p,t)
 
@@ -169,7 +170,9 @@ Compute the $c^1$ coefficient matrix for the Vlasov-Poisson equation.
 - `V0::AbstractArray`: the initial data.
 # Description
 Following [Einkemmer2018](@cite), the $c^1$ coefficient matrix is given by,
-```math  c^1_{jl} ≔ ∫_{\Omega_v} v V_j V_l \,\mathrm{d} v. ```
+```math
+    c^1_{jl} \coloneqq \int_{\Omega_v} v V_j V_l \,\mathrm{d} v.
+```
 """
 function calc_c1!(c1,v,V0)
     @fastmath mul!(c1,V0', v.*V0)
@@ -186,7 +189,9 @@ Compute the $c^2$ coefficient matrix for the Vlasov-Poisson equation.
 - `dvV::AbstractArray`: the matrix to be mutated for the spectral computation of the derivative.
 # Description
 Following [Einkemmer2018](@cite), the $c^2$ coefficient matrix is given by,
-```math  c^2_{jl} ≔ ∫_{\Omega_v} V_j (∇_v V_l) \,\mathrm{d} v. ```
+```math
+    c^2_{jl} \coloneqq \int_{\Omega_v} V_j (\nabla_v V_l) \,\mathrm{d} v.
+```
 """
 function calc_c2!(c2,dv,V0,dvV)
     der_fft!(dvV,V0,dv)
@@ -203,7 +208,9 @@ Compute the $d^1$ coefficient matrix for the Vlasov-Poisson equation.
 - `X0::AbstractArray`: the initial data.
 # Description
 Following [Einkemmer2018](@cite), the $d^1$ coefficient matrix is given by,
-```math d^1_{ik} ≔ ∫_{\Omega_x} X_i E X_k \,\mathrm{d} x. ```
+```math
+    d^1_{ik} \coloneqq \int_{\Omega_x} X_i E X_k \,\mathrm{d} x.
+```
 """
 function calc_d1!(d1,E,X0)
     @fastmath mul!(d1, X0', E .* X0)
@@ -220,7 +227,9 @@ Compute the $d^2$ coefficient matrix for the Vlasov-Poisson equation.
 - `dxX::AbstractArray`: the matrix to be mutated for the spectral computation of the derivative.
     # Description
 Following [Einkemmer2018](@cite), the $d^2$ coefficient matrix is given by,
-```math d_{ik}^2 ≔ ∫_{\Omega_x} X_i(∇_x X_k) \,\mathrm{d} x. ```
+```math
+    d_{ik}^2 \coloneqq \int_{\Omega_x} X_i(\nabla_x X_k) \,\mathrm{d} x.
+```
 """
 function calc_d2!(d2,dx,X0,dxX)
     der_fft!(dxX,X0,dx)
@@ -240,7 +249,9 @@ Solve the Poisson equation for the inrotational electric field.
 - `dx::Tuple`: a triplet containing a vector to be mutated, a frequency vector, and a pre-planned FFT object.
 # Description
 The electric field in the case of the Vlasov-Poisson equation, satisfies the following equations,
-```math ∇ ⋅ {E}(f)(x) &= 1 - ∫_{\Omega_v} f(t,x,v) \,\mathrm{d} v, \qquad  ∇ \times {E}(f)(x) = 0. ```
+```math
+    \nabla {E}(f)(x) &= 1 - \int_{\Omega_v} f(t,x,v) \,\mathrm{d} v, \qquad  \nabla \times {E}(f)(x) = 0.
+    ```
 """
 function calc_E!(E,X0,S0,V0,h,dx)
     p = dx[3]

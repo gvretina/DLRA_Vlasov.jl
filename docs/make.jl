@@ -2,7 +2,7 @@ using DLRA_Vlasov
 using Documenter
 using DocumenterCitations
 
-bib = CitationBibliography(joinpath(@__DIR__, "src", "refs.bib"))
+bib = CitationBibliography(joinpath(@__DIR__, "refs.bib"),style=:authoryear)
 DocMeta.setdocmeta!(DLRA_Vlasov, :DocTestSetup, :(using DLRA_Vlasov); recursive=true)
 
 makedocs(;
@@ -10,8 +10,9 @@ makedocs(;
     authors="Giorgos Vretinaris",
     sitename="DLRA_Vlasov.jl",
     format=Documenter.HTML(;
+        prettyurls = true,
         canonical="https://gvretina.github.io/DLRA_Vlasov.jl",
-        edit_link="main",
+        edit_link="master",
         assets=String["assets/citations.css"],
     ),
     pages=[
@@ -22,5 +23,5 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/gvretina/DLRA_Vlasov.jl",
-    devbranch="main",
+    devbranch="master",
 )

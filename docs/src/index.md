@@ -12,3 +12,9 @@ Documentation for [DLRA_Vlasov](https://github.com/gvretina/DLRA_Vlasov.jl).
 ```@autodocs
 Modules = [DLRA_Vlasov]
 ```
+
+
+## References
+
+```@bibliography
+```
