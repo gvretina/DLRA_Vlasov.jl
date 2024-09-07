@@ -255,7 +255,7 @@ Solve the Poisson equation for the inrotational electric field.
 The electric field in the case of the Vlasov-Poisson equation, satisfies the following equations,
 ```math
     \nabla {E}(f)(x) &= 1 - \int_{\Omega_v} f(t,x,v) \,\mathrm{d} v, \qquad  \nabla \times {E}(f)(x) = 0.
-    ```
+```
 """
 function calc_E!(E,X0,S0,V0,h,dx)
     p = dx[3]
