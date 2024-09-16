@@ -32,7 +32,7 @@ Right-hand side of the Vlasov-Poisson equation.
 # Description
 The Vlasov-Poisson equation is given by the following expression,
 ```math
-\partial_t f(t,x,v) = -v \cdot \nabla_x f(t,x,v) + E(x) \cdot \nabla_v f(t,x,v).
+    \partial_t f(t,x,v) = -v \cdot \nabla_x f(t,x,v) + E(x) \cdot \nabla_v f(t,x,v).
 ```
 """
 function A_dot(Y0::AbstractArray,p,t)
@@ -65,7 +65,7 @@ The Vlasov-Poisson equation is given by the following expression,
 ```
 but now further does a low-rank representation of $f$, i.e.
 ```math
-f(t,x,v) = ∑_{i,j=1}^r X_i(t,x) S_{ij}(t) V_{j}(t,v).
+    f(t,x,v) = ∑_{i,j=1}^r X_i(t,x) S_{ij}(t) V_{j}(t,v).
 ```
 """
 function A_dot(X0::AbstractArray,
@@ -151,7 +151,7 @@ Right-hand side of the DLRA S-step for Vlasov-Poisson equation.
 - `t::AbstractFloat`: the time of evaluation.
 Following [Einkemmer2018](@cite), the differential equation for the S-step is,
 ```math
-\dot{S}_{ij}(t) = \sum_{k,l=1}^r \left(- c_{jl}^1 \cdot d_{ik}^2 + c_{jl}^2 \cdot d_{ik}^1 \right) S_{kl}(t).
+    \dot{S}_{ij}(t) = \sum_{k,l=1}^r \left(- c_{jl}^1 \cdot d_{ik}^2 + c_{jl}^2 \cdot d_{ik}^1 \right) S_{kl}(t).
 ```
 """
 function S_dot!(Ṡ,S0,p,t)
@@ -254,7 +254,7 @@ Solve the Poisson equation for the inrotational electric field.
 # Description
 The electric field in the case of the Vlasov-Poisson equation, satisfies the following equations,
 ```math
-    \nabla {E}(f)(x) &= 1 - \int_{\Omega_v} f(t,x,v) \,\mathrm{d} v, \qquad  \nabla \times {E}(f)(x) = 0.
+    \nabla {E}(f)(x) = 1 - \int_{\Omega_v} f(t,x,v) \,\mathrm{d} v, \qquad  \nabla \times {E}(f)(x) = 0.
 ```
 """
 function calc_E!(E,X0,S0,V0,h,dx)
