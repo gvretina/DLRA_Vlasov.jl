@@ -93,7 +93,7 @@ Right-hand side of the DLRA K-step for Vlasov-Poisson equation.
 # Description
 Following [Einkemmer2018](@cite), the differential equation for the K-step is,
 ```math
-    \dot{K}_j = \sum_{l=1}^r \left( - c_{jl}^1 ⋅ \nabla_x K_l (t,x) + c_{jl}^2 ⋅ E(K)(t,x) K_l(t,x) \right).
+    \dot{K}_j(t,x) = \sum_{l=1}^r \left( - c_{jl}^1 ⋅ \nabla_x K_l (t,x) + c_{jl}^2 ⋅ E(K)(t,x) K_l(t,x) \right).
 ```
 """
 function K_dot!(K̇,K0,p,t)
