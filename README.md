@@ -2,7 +2,7 @@
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://gvretina.github.io/DLRA_Vlasov.jl/stable/)
 [![Build Status](https://github.com/gvretina/DLRA_Vlasov.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/gvretina/DLRA_Vlasov.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![Coverage](https://codecov.io/gh/gvretina/DLRA_Vlasov.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/gvretina/DLRA_Vlasov.jl)
+[![Coverage](https://codecov.io/gh/gvretina/DLRA_Vlasov.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/gvretina/DLRA_Vlasov.jl)
 
 ## Overview
 
